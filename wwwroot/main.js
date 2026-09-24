@@ -1,4 +1,4 @@
-import { initViewer, loadModel } from './viewer.js';
+import { initViewer, loadModel, probarNavegador } from './viewer.js';
 
 initViewer(document.getElementById('preview')).then(viewer => {
     const urn = window.location.hash?.substring(1);
@@ -86,8 +86,10 @@ async function onModelSelected(viewer, urn) {
                 break;
             default:
                 clearNotification();
-                loadModel(viewer, urn);
-                break; 
+                await loadModel(viewer, urn);
+                await probarNavegador(viewer);
+                console.log('MODELO 3D CARGADO CORRECTAMENTE');
+                break;
         }
     } catch (err) {
         alert('Could not load model. See the console for more details.');
