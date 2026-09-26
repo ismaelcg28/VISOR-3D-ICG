@@ -1,4 +1,4 @@
-const CACHE_NAME = 'visor-3d-icg-v14';
+const CACHE_NAME = 'visor-3d-icg-v15';
 const DERIVATIVE_BASE = 'https://developer.api.autodesk.com/derivativeservice/v2';
 const VIEWER_BASE = 'https://developer.api.autodesk.com/modelderivative/v2/viewers/7.99';
 const APP_SHELL = [

@@ -81,7 +81,18 @@ body, html {
 
 @media (max-width: 720px) {
     #header .brand {
+        display: flex;
+        gap: 0.25em;
+        margin-left: 0.2em;
+    }
+
+    #header .brand .title {
         display: none;
+    }
+
+    #header .logo {
+        width: 1.8em;
+        height: 1.8em;
     }
 
     #header > * {
