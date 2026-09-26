@@ -11,13 +11,15 @@
     <link rel="stylesheet" href="/main.css">
     <link rel="manifest" href="/manifest.webmanifest">
     <meta name="theme-color" content="#1f2937">
-    <title>Autodesk Platform Services: Simple Viewer</title>
+    <title>VISOR 3D ICG</title>
 </head>
 
 <body>
     <div id="header">
-        <img class="logo" src="https://cdn.autodesk.io/logo/black/stacked.png" alt="Autodesk Platform Services">
-        <span class="title">Simple Viewer</span>
+        <a class="brand" href="/" aria-label="VISOR 3D ICG inicio">
+            <img class="logo" src="/icon.svg" alt="">
+            <span class="title">VISOR 3D ICG</span>
+        </a>
         <select name="models" id="models"></select>
         <button id="offline" title="Guardar este modelo en el dispositivo">Preparar offline</button>
         <button id="export-offline" title="Crear paquete para la APK offline">Exportar .visor3d</button>
@@ -28,7 +30,7 @@
     <div id="preview"></div>
     <div id="overlay"></div>
     <script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.99/viewer3D.js"></script>
-    <script src="/main.js?v=13" type="module"></script>
+    <script src="/main.js?v=14" type="module"></script>
 </body>
 
 </html>
