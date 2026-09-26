@@ -1,6 +1,10 @@
-const CACHE_NAME = 'visor-3d-icg-v15';
+const CACHE_NAME = 'visor-3d-icg-v18';
 const DERIVATIVE_BASE = 'https://developer.api.autodesk.com/derivativeservice/v2';
 const VIEWER_BASE = 'https://developer.api.autodesk.com/modelderivative/v2/viewers/7.99';
+const APP_SHELL_PATHS = new Set([
+    '/', '/index.html', '/main.css', '/main.js', '/viewer.js',
+    '/manifest.webmanifest', '/icon.svg'
+]);
 const APP_SHELL = [
     '/', '/index.html', '/main.css', '/main.js', '/viewer.js', '/manifest.webmanifest', '/icon.svg',
     `${VIEWER_BASE}/style.css`, `${VIEWER_BASE}/viewer3D.js`, `${VIEWER_BASE}/lmvworker.js`,
@@ -23,7 +27,10 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
     if (event.request.method !== 'GET') return;
     const url = new URL(event.request.url);
-    event.respondWith(url.origin === self.location.origin && url.pathname.startsWith('/api/')
+    const sameOrigin = url.origin === self.location.origin;
+    const shouldRefreshAppShell = sameOrigin && APP_SHELL_PATHS.has(url.pathname);
+    const isApiRequest = sameOrigin && url.pathname.startsWith('/api/');
+    event.respondWith(shouldRefreshAppShell || isApiRequest
         ? networkFirst(event.request)
         : cacheFirst(event.request));
 });

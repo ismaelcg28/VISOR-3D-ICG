@@ -3,7 +3,7 @@ const formidable = require('express-formidable');
 const archiver = require('archiver');
 const path = require('path');
 const zlib = require('zlib');
-const { listObjects, uploadObject, translateObject, prepareObjectForOffline, getManifest, getInternalToken, urnify } = require('../services/aps.js');
+const { listObjects, uploadObject, deleteObject, translateObject, prepareObjectForOffline, getManifest, getInternalToken, urnify } = require('../services/aps.js');
 
 let router = express.Router();
 
@@ -41,6 +41,26 @@ router.get('/api/models/:urn/status', async function (req, res, next) {
     } catch (err) {
         next(err);
     }
+});
+
+router.post('/api/models/delete', async function (req, res, next) {
+    const names = req.body?.names;
+    if (!Array.isArray(names) || names.length === 0 || names.length > 50 || names.some((name) => typeof name !== 'string')) {
+        res.status(400).send('Selecciona entre 1 y 50 proyectos para eliminar.');
+        return;
+    }
+
+    const deleted = [];
+    const failed = [];
+    for (const name of [...new Set(names)]) {
+        try {
+            await deleteObject(name);
+            deleted.push(name);
+        } catch (error) {
+            failed.push({ name, message: error.message });
+        }
+    }
+    res.status(failed.length ? 207 : 200).json({ deleted, failed });
 });
 
 router.post('/api/models/:urn/offline', async function (req, res, next) {

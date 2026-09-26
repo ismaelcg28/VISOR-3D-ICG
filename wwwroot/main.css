@@ -79,6 +79,80 @@ body, html {
     white-space: nowrap;
 }
 
+#manage-models {
+    white-space: nowrap;
+}
+
+#models-dialog {
+    width: min(32rem, calc(100vw - 3rem));
+    max-height: min(80vh, 40rem);
+    padding: 1.25rem;
+    border: 1px solid #9ca3af;
+    border-radius: 0.65rem;
+    color: #111827;
+    background: #fff;
+    font-family: ArtifaktElement, sans-serif;
+}
+
+#models-dialog::backdrop {
+    background: rgb(0 0 0 / 55%);
+}
+
+#models-dialog .dialog-heading,
+#models-dialog .dialog-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+#models-dialog .dialog-heading h2 {
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+#models-dialog .dialog-heading button {
+    min-width: 2.25rem;
+}
+
+#managed-model-list {
+    display: grid;
+    gap: 0.35rem;
+    max-height: 50vh;
+    overflow: auto;
+    margin: 1rem 0;
+}
+
+#managed-model-list label {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.6rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.35rem;
+    overflow-wrap: anywhere;
+}
+
+#managed-model-list input {
+    flex: 0 0 auto;
+    width: 1.1rem;
+    height: 1.1rem;
+}
+
+#models-dialog .dialog-actions {
+    justify-content: flex-end;
+}
+
+#delete-models {
+    color: #fff;
+    background: #b91c1c;
+    border: 1px solid #991b1b;
+}
+
+#delete-models:disabled {
+    opacity: 0.5;
+}
+
 @media (max-width: 720px) {
     #header .brand {
         display: flex;
@@ -98,5 +172,22 @@ body, html {
     #header > * {
         margin: 0 0.2em;
         font-size: 0.85em;
+    }
+
+    #manage-models {
+        max-width: 5.4em;
+        padding: 0 0.35em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+@media (min-width: 480px) and (max-width: 720px) {
+    #header .brand .title {
+        display: block;
+        flex: 0 1 auto;
+        height: auto;
+        font-size: 0.8em;
+        white-space: nowrap;
     }
 }

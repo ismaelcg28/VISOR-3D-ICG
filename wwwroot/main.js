@@ -5,6 +5,7 @@ initViewer(document.getElementById('preview')).then(viewer => {
     window.viewerActual = viewer;
     const urn = window.location.hash?.substring(1);
     setupModelSelection(viewer, urn);
+    setupModelManager(viewer);
     setupModelUpload(viewer);
     setupOffline(viewer);
     setupOfflineExport();
@@ -95,7 +96,14 @@ async function setupModelSelection(viewer, selectedUrn) {
             throw new Error(await resp.text());
         }
         const models = await resp.json();
-        dropdown.innerHTML = models.map(model => `<option value=${model.urn} ${model.urn === selectedUrn ? 'selected' : ''}>${model.name}</option>`).join('\n');
+        renderManagedModels(models);
+        for (const model of models) {
+            const option = document.createElement('option');
+            option.value = model.urn;
+            option.textContent = model.name;
+            option.selected = model.urn === selectedUrn;
+            dropdown.append(option);
+        }
         dropdown.onchange = () => onModelSelected(viewer, dropdown.value);
         if (dropdown.value) {
             onModelSelected(viewer, dropdown.value);
@@ -104,6 +112,85 @@ async function setupModelSelection(viewer, selectedUrn) {
         alert('Could not list models. See the console for more details.');
         console.error(err);
     }
+}
+
+function setupModelManager(viewer) {
+    const dialog = document.getElementById('models-dialog');
+    const list = document.getElementById('managed-model-list');
+    const deleteButton = document.getElementById('delete-models');
+    const updateDeleteButton = () => {
+        deleteButton.disabled = list.querySelectorAll('input[type="checkbox"]:checked').length === 0;
+    };
+
+    document.getElementById('manage-models').onclick = () => dialog.showModal();
+    document.getElementById('close-models').onclick = () => dialog.close();
+    list.onchange = updateDeleteButton;
+    deleteButton.onclick = async () => {
+        const selected = [...list.querySelectorAll('input[type="checkbox"]:checked')];
+        const names = selected.map((checkbox) => checkbox.value);
+        if (!names.length) return;
+        const summary = names.length <= 4 ? names.join('\n') : `${names.slice(0, 4).join('\n')}\ny ${names.length - 4} más`;
+        if (!window.confirm(`Se eliminarán permanentemente estos ${names.length} proyecto(s) del almacenamiento:\n\n${summary}\n\nEsta acción no se puede deshacer. ¿Continuar?`)) return;
+
+        deleteButton.disabled = true;
+        try {
+            const response = await fetch('/api/models/delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ names })
+            });
+            const responseBody = await response.text();
+            let result;
+            try {
+                result = JSON.parse(responseBody);
+            } catch (_error) {
+                result = null;
+            }
+            if (!response.ok) throw new Error(responseBody || 'No se pudieron eliminar los proyectos.');
+
+            const dropdown = document.getElementById('models');
+            const selectedUrn = dropdown.value;
+            const selectedModel = [...dropdown.options].find((option) => option.value === selectedUrn);
+            const deletedCurrentModel = selectedModel && result.deleted.includes(selectedModel.textContent);
+            if (deletedCurrentModel && viewer.model) viewer.impl.unloadModel(viewer.model);
+            if (deletedCurrentModel) window.location.hash = '';
+
+            if (result.failed.length) {
+                alert(`Se eliminaron ${result.deleted.length} proyecto(s). No se pudieron eliminar: ${result.failed.map((item) => `${item.name}: ${item.message}`).join('; ')}`);
+            } else {
+                alert(`Se eliminaron ${result.deleted.length} proyecto(s).`);
+            }
+            await setupModelSelection(viewer, deletedCurrentModel ? '' : selectedUrn);
+        } catch (error) {
+            console.error(error);
+            alert(`No se pudieron eliminar los proyectos: ${error.message}`);
+        } finally {
+            updateDeleteButton();
+        }
+    };
+}
+
+function renderManagedModels(models) {
+    const list = document.getElementById('managed-model-list');
+    list.replaceChildren();
+    if (!models.length) {
+        const empty = document.createElement('p');
+        empty.textContent = 'No hay proyectos cargados.';
+        list.append(empty);
+        document.getElementById('delete-models').disabled = true;
+        return;
+    }
+    for (const model of models) {
+        const label = document.createElement('label');
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = model.name;
+        const name = document.createElement('span');
+        name.textContent = model.name;
+        label.append(checkbox, name);
+        list.append(label);
+    }
+    document.getElementById('delete-models').disabled = true;
 }
 
 async function setupModelUpload(viewer) {

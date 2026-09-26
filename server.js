@@ -38,6 +38,7 @@ function protectPublicDeployment(req, res, next) {
 }
 
 app.use(protectPublicDeployment);
+app.use(express.json({ limit: '100kb' }));
 app.use(express.static('wwwroot'));
 app.use(require('./routes/auth.js'));
 app.use(require('./routes/models.js'));

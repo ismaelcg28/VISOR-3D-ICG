@@ -23,14 +23,27 @@
         <select name="models" id="models"></select>
         <button id="offline" title="Guardar este modelo en el dispositivo">Preparar offline</button>
         <button id="export-offline" title="Crear paquete para la APK offline">Exportar .visor3d</button>
+        <button id="manage-models" title="Seleccionar y eliminar proyectos cargados">Proyectos</button>
         <button id="install" hidden>Instalar aplicación</button>
         <button id="upload" title="Upload New Model">Upload</button>
         <input style="display: none" type="file" id="input">
     </div>
+    <dialog id="models-dialog" aria-labelledby="models-dialog-title">
+        <form method="dialog" class="dialog-heading">
+            <h2 id="models-dialog-title">Proyectos cargados</h2>
+            <button aria-label="Cerrar">✕</button>
+        </form>
+        <p>Marca los proyectos que ya no necesites.</p>
+        <div id="managed-model-list"></div>
+        <div class="dialog-actions">
+            <button id="delete-models" type="button" disabled>Eliminar seleccionados</button>
+            <button id="close-models" type="button">Cerrar</button>
+        </div>
+    </dialog>
     <div id="preview"></div>
     <div id="overlay"></div>
     <script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.99/viewer3D.js"></script>
-    <script src="/main.js?v=15" type="module"></script>
+    <script src="/main.js?v=16" type="module"></script>
 </body>
 
 </html>

@@ -79,6 +79,29 @@ service.translateObject = async (urn, rootFilename) => {
     return job.result;
 };
 
+service.deleteObject = async (objectKey) => {
+    const objects = await service.listObjects();
+    const object = objects.find((item) => item.objectKey === objectKey);
+    if (!object) {
+        const error = new Error('El proyecto ya no existe en el almacenamiento.');
+        error.status = 404;
+        throw error;
+    }
+
+    const accessToken = await getInternalToken();
+    const urn = Buffer.from(object.objectId).toString('base64')
+        .replace(/=/g, '')
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_');
+    try {
+        await modelDerivativeClient.deleteManifest(urn, { accessToken });
+    } catch (err) {
+        if (err.axiosError?.response?.status !== 404) throw err;
+    }
+    await ossClient.deleteObject(APS_BUCKET, objectKey, { accessToken });
+    return objectKey;
+};
+
 service.prepareObjectForOffline = async (urn) => {
     const accessToken = await getInternalToken();
     const job = await modelDerivativeClient.startJob({
