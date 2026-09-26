@@ -13,8 +13,6 @@ services:
         sync: false
       - key: APS_CLIENT_SECRET
         sync: false
-      - key: APS_BUCKET
-        sync: false
       - key: APP_USERNAME
         sync: false
       - key: APP_PASSWORD
