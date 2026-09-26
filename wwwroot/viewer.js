@@ -14,15 +14,55 @@ async function getAccessToken(callback) {
     }
 }
 
+function configurarRenderizadoMovil(viewer) {
+    if (!/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent)) return;
+    viewer.setProgressiveRendering(false);
+    viewer.prefs?.set?.('progressiveRendering', false);
+    viewer.impl?.invalidate?.(true, true, true);
+}
+
+async function configurarMedicionNativa(viewer, model) {
+    // La traducción DWG entrega las coordenadas 3D ya normalizadas en metros,
+    // aunque conserva "mm" como unidad declarada. Corregimos solo la unidad;
+    // no volvemos a escalar la geometría.
+    model.getData().overriddenUnits = 'm';
+    const measure = await viewer.loadExtension('Autodesk.Measure');
+    measure.setUnits('cm');
+    measure.setPrecision(2);
+    const bounds = model.getBoundingBox();
+    console.log('MEDICION_CONFIGURADA', JSON.stringify({
+        unidadModelo: model.getUnitString?.(),
+        unidadVisible: measure.getUnits(),
+        dimensionesMetros: {
+            x: bounds.max.x - bounds.min.x,
+            y: bounds.max.y - bounds.min.y,
+            z: bounds.max.z - bounds.min.z
+        }
+    }));
+}
+
+function encuadrarModeloConMargen(viewer, model) {
+    const bounds = model.getBoundingBox().clone();
+    const center = bounds.getCenter(new THREE.Vector3());
+    const size = bounds.getSize(new THREE.Vector3()).multiplyScalar(1.25);
+    bounds.setFromCenterAndSize(center, size);
+    viewer.navigation.fitBounds(true, bounds, false, true);
+}
+
 export function initViewer(container) {
     return new Promise(function (resolve, reject) {
-        Autodesk.Viewing.Initializer({ env: 'AutodeskProduction', getAccessToken }, function () {
+        Autodesk.Viewing.Initializer({
+            env: 'AutodeskProduction',
+            getAccessToken
+        }, function () {
             const config = {
                 extensions: ['Autodesk.DocumentBrowser']
             };
             const viewer = new Autodesk.Viewing.GuiViewer3D(container, config);
             viewer.start();
             viewer.setTheme('light-theme');
+
+            configurarRenderizadoMovil(viewer);
             resolve(viewer);
         });
     });
@@ -40,9 +80,12 @@ export function loadModel(viewer, urn) {
             console.log('Vistas 3D encontradas:', viewables3D);
 
             if (viewables3D.length > 0) {
-                resolve(
-                    viewer.loadDocumentNode(doc, viewables3D[0])
-                );
+                viewer.loadDocumentNode(doc, viewables3D[0]).then(async (model) => {
+                    configurarRenderizadoMovil(viewer);
+                    await configurarMedicionNativa(viewer, model);
+                    encuadrarModeloConMargen(viewer, model);
+                    resolve(model);
+                }, reject);
             } else {
                 reject(
                     new Error('El archivo no contiene una vista 3D traducida por APS.')
@@ -295,13 +338,13 @@ class GroupedModelStructurePanel extends Autodesk.Viewing.Extensions.ViewerModel
     }
 
     selectInstance(node, event) {
+        this.viewer.fitToView([node.dbId], this.model, true);
+
         if (event.ctrlKey || event.metaKey || event.shiftKey) {
             this.viewer.toggleSelect(node.dbId);
         } else {
             this.viewer.select(node.dbId);
         }
-
-        this.viewer.fitToView([node.dbId]);
     }
 
     onViewerSelect(event) {
@@ -317,10 +360,7 @@ class GroupedModelStructurePanel extends Autodesk.Viewing.Extensions.ViewerModel
             .map((dbId) => this.instancesByDbId.get(dbId))
             .filter(Boolean);
 
-        this.tree.clearSelection();
-        if (selectedNodes.length) {
-            this.tree.addToSelection(selectedNodes);
-        }
+        this.selectedNodes = selectedNodes;
     }
 
     // El panel se construye con datos agrupados; la extensión puede invocar

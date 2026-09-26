@@ -1,0 +1,17 @@
+{
+  "name": "VISOR 3D ICG",
+  "short_name": "VISOR ICG",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1f2937",
+  "description": "Visor 3D de modelos DWG con modo offline",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

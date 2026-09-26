@@ -20,6 +20,8 @@ async function getInternalToken() {
     return credentials.access_token;
 }
 
+service.getInternalToken = getInternalToken;
+
 service.getViewerToken = async () => {
     return await authenticationClient.getTwoLeggedToken(APS_CLIENT_ID, APS_CLIENT_SECRET, [Scopes.ViewablesRead]);
 };
@@ -68,10 +70,23 @@ service.translateObject = async (urn, rootFilename) => {
         output: {
             formats: [{
                 views: [View._2d, View._3d],
-                type: OutputType.Svf2
+                // SVF puede almacenarse completo en la caché del navegador y
+                // abrirse sin conexión. SVF2 depende de servicios de streaming.
+                type: OutputType.Svf
             }]
         }
     }, { accessToken });
+    return job.result;
+};
+
+service.prepareObjectForOffline = async (urn) => {
+    const accessToken = await getInternalToken();
+    const job = await modelDerivativeClient.startJob({
+        input: { urn },
+        output: {
+            formats: [{ views: [View._2d, View._3d], type: OutputType.Svf }]
+        }
+    }, { accessToken, xAdsForce: true });
     return job.result;
 };
 

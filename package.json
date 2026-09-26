@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "Autodesk Platform Services application built by following the Simple Viewer tutorial from https://aps.autodesk.com/tutorials.",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "android:open": "\"C:\\Program Files\\Android\\Android Studio\\bin\\studio64.exe\" android-app"
   },
   "keywords": [
     "autodesk-platform-services"
@@ -13,6 +14,7 @@
     "@aps_sdk/authentication": "^1.0.0",
     "@aps_sdk/model-derivative": "^1.0.0",
     "@aps_sdk/oss": "^1.0.1",
+    "archiver": "^7.0.1",
     "dotenv": "^16.4.1",
     "express": "^4.18.2",
     "express-formidable": "^1.2.0"

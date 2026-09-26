@@ -43,6 +43,27 @@ APS_CLIENT_SECRET="<client-secret>"
 > When using [Visual Studio Code](https://code.visualstudio.com), you can run & debug
 > the application by pressing `F5`.
 
+## Uso sin conexión en teléfonos y tabletas
+
+La aplicación funciona como PWA. El dispositivo debe abrir una versión publicada mediante HTTPS
+al menos una vez. Selecciona un modelo y pulsa **Preparar offline**; mantén la página abierta hasta
+que aparezca **Disponible offline ✓**. Después puedes instalarla desde el botón del navegador o,
+en iPhone/iPad, desde **Compartir > Agregar a inicio**.
+
+La traducción inicial de un DWG requiere conexión con APS. Una vez preparado, el modelo y los
+recursos del Viewer quedan en la caché privada de ese dispositivo. Borrar los datos del navegador
+elimina esa copia. Los modelos grandes pueden superar el almacenamiento disponible del teléfono.
+
+El modo PWA requiere HTTPS, excepto en `localhost`. Abrir `http://<IP-de-la-PC>:8080` desde otro
+dispositivo sirve para probar el visor conectado, pero el navegador móvil puede bloquear la
+instalación y el modo offline por no usar HTTPS.
+
+## APK independiente sin conexión
+
+La carpeta `android-offline-app` contiene una segunda aplicación con APS Viewer incorporado y almacenamiento privado por instalación. Desde la aplicación conectada, selecciona un modelo traducido y pulsa **Exportar .visor3d**. Copia el archivo resultante al dispositivo y cárgalo desde **VISOR 3D ICG Offline**.
+
+Esta variante no convierte archivos DWG sin internet: importa derivados preparados previamente. Consulta `android-offline-app/README.md` y `docs/08-implementacion-apk-offline.md` para conocer el flujo y las limitaciones.
+
 ## Troubleshooting
 
 Please contact us via https://forge.autodesk.com/en/support/get-help.

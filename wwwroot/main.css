@@ -56,3 +56,18 @@ body, html {
 .grouped-model-structure-panel .grouped-model-instance {
     cursor: pointer;
 }
+
+#offline {
+    white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+    #header .logo, #header .title {
+        display: none;
+    }
+
+    #header > * {
+        margin: 0 0.2em;
+        font-size: 0.85em;
+    }
+}

@@ -5,9 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="icon" type="image/x-icon" href="https://cdn.autodesk.io/favicon.ico">
-    <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/style.css">
+    <link rel="icon" type="image/svg+xml" href="/icon.svg">
+    <link rel="apple-touch-icon" href="/icon.svg">
+    <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.99/style.css">
     <link rel="stylesheet" href="/main.css">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#1f2937">
     <title>Autodesk Platform Services: Simple Viewer</title>
 </head>
 
@@ -16,13 +19,16 @@
         <img class="logo" src="https://cdn.autodesk.io/logo/black/stacked.png" alt="Autodesk Platform Services">
         <span class="title">Simple Viewer</span>
         <select name="models" id="models"></select>
+        <button id="offline" title="Guardar este modelo en el dispositivo">Preparar offline</button>
+        <button id="export-offline" title="Crear paquete para la APK offline">Exportar .visor3d</button>
+        <button id="install" hidden>Instalar aplicación</button>
         <button id="upload" title="Upload New Model">Upload</button>
         <input style="display: none" type="file" id="input">
     </div>
     <div id="preview"></div>
     <div id="overlay"></div>
-    <script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.js"></script>
-    <script src="/main.js" type="module"></script>
+    <script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.99/viewer3D.js"></script>
+    <script src="/main.js?v=13" type="module"></script>
 </body>
 
 </html>
